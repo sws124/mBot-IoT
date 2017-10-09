@@ -1,0 +1,95 @@
+﻿{	
+	"extensionName": "mBot Wifi IoT",
+	"description": "supported IoT: ThingSpeak, IFTTT",
+	"version": "1.0",
+	"author": " ",
+	"homepage": "",
+	"sort":0,
+	"javascriptURL":"js/iot.js",
+  	"firmware":"1.0",
+  	"extensionPort":0,
+	"blockSpecs": [
+		[
+			"w",
+			"connect to Wifi %d.port SSID %s password %s",
+			"connectWifi",
+			"Port 1",
+			"SSID",
+			"password",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"int receivePin[] = {12, 10, A3, A1};\nint transmitPin[] = {11, 9, A2, A0};\nSoftwareSerial wifiConnection(receivePin[{0}-1], transmitPin[{0}-1]);\n",
+				"work":"wifiConnection.begin(9600);\nwifiConnection.println(F(\"AT+CWMODE=1\"));\ndelay(1000);\nwifiConnection.println(F(\"AT+CIPMUX=0\"));\nwifiConnection.println(\"AT+CWJAP=\\\"\"+(String){1}+\"\\\"+\\\"\"+(String){2}+\"\\\"\");\ndelay(10000);\n",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"ThingSpeak Write API %s with field(1-8) %n %n %n %n %n %n %n %n",
+			"thingSpeakAPI",
+			"API Key",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"char thingSpeakHttpGet[256];\n",
+				"work":"sprintf(thingSpeakHttpGet, \"GET /update?api_key=%s&field1=%d&field2=%d&field3=%d&field4=%d&field5=%d&field6=%d&field7=%d&field8=%d\", {0}, (int){1}, (int){2}, (int){3}, (int){4}, (int){5}, (int){6}, (int){7}, (int){8});\nwifiConnection.println(F(\"AT+CIPSTART=\\\"TCP\\\",\\\"184.106.153.149\\\",80\"));\ndelay(3000);\nwifiConnection.println(\"AT+CIPSEND=\"+(String)(strlen(thingSpeakHttpGet)+2));\ndelay(3000);\nwifiConnection.println(thingSpeakHttpGet);\ndelay(3000);\nwifiConnection.println(F(\"AT+CIPCLOSE\"));\n",
+				"loop":""
+			}
+		],
+		[
+			"w",
+			"IFTTT API %s event %s value(1-3) %s %s %s",
+			"IFTTTAPI",
+			"API key",
+			"EventName",
+			"Value1",
+			"Value2",
+			"Value3",
+			{
+				"setup":"",
+				"inc":"",
+				"def":"char iftttHttpGet[256];\n",
+				"work":"sprintf(iftttHttpGet, \"GET https://maker.ifttt.com/trigger/%s/with/key/%s?value1=\\\"%s\\\"&value2=\\\"%s\\\"&value3=\\\"%s\\\"\",((String)({1})).c_str(),((String)({0})).c_str(),((String)({2})).c_str(),((String)({3})).c_str(),((String)({4})).c_str());\nwifiConnection.println(F(\"AT+CIPSTART=\\\"TCP\\\",\\\"maker.ifttt.com\\\",80\"));\ndelay(3000);\nwifiConnection.println(\"AT+CIPSEND=\"+(String)(strlen(iftttHttpGet)+2));\ndelay(3000);\nwifiConnection.println(iftttHttpGet);\ndelay(3000);\nwifiConnection.println(F(\"AT+CIPCLOSE\"));\n",
+				"loop":""
+			}
+		],
+	],
+	"menus": {
+        "port" : ["Port 1",  "Port 2",  "Port 3",  "Port 4"],
+	},
+	"values":{
+		"Port 1" : 1,
+		"Port 2" : 2,
+		"Port 3" : 3,
+		"Port 4" : 4,
+	},
+	"translators":{
+		"zh_TW":{
+			"connect to Wifi %d.port SSID %s password %s": "連接 Wifi %d.port SSID %s 密碼 %s",
+			"Port 1": "連接埠 1",
+            "Port 2": "連接埠 2",
+            "Port 3": "連接埠 3",
+            "Port 4": "連接埠 4",
+			"ThingSpeak Write API %s with field(1-8) %n %n %n %n %n %n %n %n": "ThingSpeak 寫入 API %s 欄位(1-8) %n %n %n %n %n %n %n %n",
+            "IFTTT API %s event %s value(1-3) %s %s %s": "IFTTT API %s 事件 %s 值(1-3) %s %s %s",
+		},
+		"zh_CN":{
+            "connect to Wifi %d.port SSID %s password %s": "连接 Wifi %d.port SSID %s 密码 %s",
+			"Port 1": "接口 1",
+            "Port 2": "接口 2",
+            "Port 3": "接口 3",
+            "Port 4": "接口 4",
+            "ThingSpeak Write API %s with field(1-8) %n %n %n %n %n %n %n %n": "ThingSpeak 写入 API %s 栏位(1-8) %n %n %n %n %n %n %n %n",
+            "IFTTT API %s event %s value(1-3) %s %s %s": "IFTTT API %s 事件 %s 值(1-3) %s %s %s",
+		}
+	}
+}
